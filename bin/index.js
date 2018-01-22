@@ -15172,11 +15172,29 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 
 const initialState = {
-  fromDate: new Date().setFullYear(new Date().getFullYear() - 1),
-  toDate: new Date(),
-  seperators: [],
-  rings: ["#bed4e6", "#ccdfee", "#dcecf9", "#f0f8ff"],
-  height: 600
+  height: 600,
+  fromDate: new Date(),
+  toDate: new Date().setFullYear(new Date().getFullYear() + 1),
+  separators: [],
+  rings: [{
+    name: "Culture",
+    color: "#bed4e6"
+  }, {
+    name: "Education",
+    color: "#ccdfee"
+  }, {
+    name: "Organization",
+    color: "#dcecf9"
+  }, {
+    name: "Recruitment",
+    color: "#f0f8ff"
+  }],
+  tasks: [{
+    category: "Culture",
+    date: "2018-03-01",
+    angle: undefined,
+    text: "Do something"
+  }]
 };
 
 const dayDiff = (a, b) => {
@@ -15188,9 +15206,11 @@ const generateSeparators = state => {
   const days = dayDiff(fromDate, toDate);
 
   const separators = Object(__WEBPACK_IMPORTED_MODULE_0_ramda__["a" /* range */])(0, days).reduce((acc, x) => {
-    const date = new Date(fromDate + x * (1000 * 60 * 60 * 24));
+    const date = new Date(+fromDate + x * (1000 * 60 * 60 * 24));
+
     if (date.getDate() === 1) {
-      return [...acc, [360 / days * x, date.getMonth()]];
+      const angle = getAngle(days, x);
+      return [...acc, [angle, date.getMonth()]];
     } else {
       return acc;
     }
@@ -15207,14 +15227,43 @@ const changeDateField = (state, field, value) => {
   });
 };
 
+const setAnglesForTasks = state => {
+  const tasks = state.tasks.map(task => {
+    return _extends({}, task, {
+      angle: getAngleWithinRange(state.fromDate, state.toDate, task.date)
+    });
+  });
+
+  return _extends({}, state, {
+    tasks
+  });
+};
+
+const getAngleWithinRange = (startDate, endDate, date) => {
+  const daysTotal = dayDiff(startDate, endDate);
+  const daysDelta = dayDiff(startDate, new Date(date));
+
+  return getAngle(daysTotal, daysDelta);
+};
+
+const getAngle = (daysTotal, daysDelta) => {
+  const angle = 360 / daysTotal * daysDelta;
+
+  if (angle >= 90) {
+    return angle - 90;
+  } else {
+    return 360 + (angle - 90);
+  }
+};
+
 /* harmony default export */ __webpack_exports__["a"] = ((state = initialState, action) => {
   switch (action.type) {
 
     case "CHANGE_DATE_FIELD":
-      return generateSeparators(changeDateField(state, action.field, action.value));
+      return setAnglesForTasks(generateSeparators(changeDateField(state, action.field, action.value)));
 
     default:
-      return generateSeparators(state);
+      return setAnglesForTasks(generateSeparators(state));
   }
 });
 
@@ -23929,6 +23978,9 @@ var zipWith = /*#__PURE__*/Object(__WEBPACK_IMPORTED_MODULE_0__internal_curry3__
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_redux__ = __webpack_require__(86);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_date_fns__ = __webpack_require__(452);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_date_fns___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_date_fns__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__circle__ = __webpack_require__(554);
+
+
 
 
 
@@ -23947,57 +23999,18 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-// Components
-
-
-const Circle = ({ height, rings, separators }) => {
-  const midPoint = height / 2;
-  const width = midPoint / (rings.length + 1);
-  const ringsAndCenter = [...rings, "#fff"];
-
-  return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-    "svg",
-    { height: height, width: height },
-    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(Rings, { rings: ringsAndCenter, width: width, midPoint: midPoint }),
-    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(Separators, { separators: separators, width: width, midPoint: midPoint })
-  );
-};
-
-const Rings = ({ rings, width, midPoint }) => __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-  "g",
-  null,
-  rings.map((color, i) => {
-    const invserseI = rings.length - i;
-    return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("circle", {
-      key: color,
-      cx: midPoint,
-      cy: midPoint,
-      r: invserseI * width,
-      fill: color,
-      stroke: "#f8f9f9a1"
-    });
-  })
-);
-
-const Separators = ({ separators, midPoint, width }) => __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-  "g",
-  null,
-  __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("line", { x1: midPoint, y1: midPoint - width, x2: midPoint, y2: 0, stroke: "#00000040" }),
-  separators.map(([angle, _]) => {
-    const x2 = midPoint + midPoint * Math.cos(Math.PI * angle / 180.0);
-    const y2 = midPoint + midPoint * Math.sin(Math.PI * angle / 180.0);
-
-    return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("line", { key: angle, x1: midPoint, y1: midPoint, x2: x2, y2: y2, stroke: "#fff" });
-  })
-);
-
 // Main Component
 
-const main = ({ fromDate, toDate, height, rings, separators, onChange }) => {
+const main = ({ fromDate, toDate, height, rings, tasks, separators, onChange }) => {
   return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
     "div",
     null,
-    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(Circle, { height: height, rings: rings, separators: separators }),
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3__circle__["a" /* default */], {
+      height: height,
+      rings: rings,
+      tasks: tasks,
+      separators: separators
+    }),
     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
       "div",
       null,
@@ -31160,6 +31173,79 @@ function subYears(dirtyDate, dirtyAmount) {
 }
 
 module.exports = subYears;
+
+/***/ }),
+/* 554 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
+
+
+const Rings = ({ rings, width, midPoint }) => __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+  "g",
+  null,
+  rings.map(({ color }, i) => {
+    const invserseI = rings.length - i;
+    return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("circle", {
+      key: color,
+      cx: midPoint,
+      cy: midPoint,
+      r: invserseI * width,
+      fill: color,
+      stroke: "#f8f9f9a1"
+    });
+  })
+);
+
+const Separators = ({ separators, midPoint, width }) => __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+  "g",
+  null,
+  __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("line", { x1: midPoint, y1: midPoint - width, x2: midPoint, y2: 0, stroke: "#00000040" }),
+  separators.map(([angle, _]) => {
+    const x2 = midPoint + midPoint * Math.cos(Math.PI * angle / 180.0);
+    const y2 = midPoint + midPoint * Math.sin(Math.PI * angle / 180.0);
+
+    return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("line", { key: angle, x1: midPoint, y1: midPoint, x2: x2, y2: y2, stroke: "#fff" });
+  })
+);
+
+const Tasks = ({ rings, tasks, midPoint, width }) => __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+  "g",
+  null,
+  rings.map(({ name }, i) => {
+    const invserseI = rings.length - i;
+    return tasks.filter(({ category }) => category === name).map(({ angle }) => {
+      const cx = midPoint + (invserseI * width - width / 2) * Math.cos(Math.PI * angle / 180.0);
+      const cy = midPoint + (invserseI * width - width / 2) * Math.sin(Math.PI * angle / 180.0);
+
+      // debugger
+
+      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("circle", {
+        key: angle,
+        cx: cx,
+        cy: cy,
+        r: "6",
+        fill: "black"
+      });
+    });
+  })
+);
+
+/* harmony default export */ __webpack_exports__["a"] = (({ height, rings, tasks, separators }) => {
+  const midPoint = height / 2;
+  const width = midPoint / (rings.length + 1);
+  const ringsAndCenter = [...rings, { color: "#fff" }];
+
+  return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+    "svg",
+    { height: height, width: height },
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(Rings, { rings: ringsAndCenter, width: width, midPoint: midPoint }),
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(Separators, { separators: separators, width: width, midPoint: midPoint }),
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(Tasks, { rings: rings, tasks: tasks, width: width, midPoint: midPoint })
+  );
+});
 
 /***/ })
 /******/ ]);
