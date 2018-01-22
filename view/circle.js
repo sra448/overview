@@ -34,23 +34,25 @@ const Separators = ({ separators, midPoint, width }) =>
   </g>
 
 
-const Tasks = ({ rings, tasks, midPoint, width }) =>
+const Tasks = ({ rings, tasks, midPoint, width, showTask }) =>
   <g>
     { rings.map(({ name }, i) => {
         const invserseI = rings.length - i + 1
         return tasks
           .filter(({ category }) => category === name)
-          .map(({ angle }) => {
+          .map(({ id, angle }) => {
             const cx = midPoint + (invserseI * width - width/2) * Math.cos(Math.PI * angle / 180.0)
             const cy = midPoint + (invserseI * width - width/2) * Math.sin(Math.PI * angle / 180.0)
-            
+
             return (
               <circle
                 key={angle}
+                className="task"
                 cx={cx}
                 cy={cy}
                 r="6"
                 fill="black"
+                onClick={showTask(id)}
                 />
               )
           })
@@ -59,7 +61,7 @@ const Tasks = ({ rings, tasks, midPoint, width }) =>
   </g>
 
 
-export default ({ height, rings, tasks, separators }) => {
+export default ({ height, rings, tasks, separators, showTask }) => {
   const midPoint = height / 2
   const width = midPoint / (rings.length + 1)
   const ringsAndCenter = [...rings, { color: "#fff" }]
@@ -68,7 +70,7 @@ export default ({ height, rings, tasks, separators }) => {
     <svg height={height} width={height}>
       <Rings rings={ringsAndCenter} width={width} midPoint={midPoint} />
       <Separators separators={separators} width={width} midPoint={midPoint} />
-      <Tasks rings={rings} tasks={tasks} width={width} midPoint={midPoint} />
+      <Tasks rings={rings} tasks={tasks} width={width} midPoint={midPoint} showTask={showTask} />
     </svg>
   )
 }

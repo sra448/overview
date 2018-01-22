@@ -31,6 +31,9 @@ const mapDispatchToProps = (dispatch) => {
     closeCurrentTask: () => {
       dispatch({ type: "CLOSE_CURRENT_TASK" })
     },
+    showTask: (id) => () => {
+      dispatch({ type: "SHOW_TASK", id })
+    }
   }
 }
 
@@ -40,7 +43,7 @@ const mapDispatchToProps = (dispatch) => {
 
 const main = (state) => {
   const { fromDate, toDate, height, rings, tasks, currentTask, separators } = state
-  const { onChange, addTask, changeCurrentTask, saveCurrentTask, closeCurrentTask } = state
+  const { onChange, addTask, changeCurrentTask, saveCurrentTask, closeCurrentTask, showTask } = state
 
   return (
     <div className="main">
@@ -65,7 +68,7 @@ const main = (state) => {
                 </select>
               </div >
               <button onClick={closeCurrentTask}>Cancel</button>
-              <button onClick={saveCurrentTask}>Add</button>
+              <button onClick={saveCurrentTask}>Save</button>
             </div>
           </div>
         : undefined
@@ -75,6 +78,7 @@ const main = (state) => {
         rings={rings}
         tasks={tasks}
         separators={separators}
+        showTask={showTask}
         />
       <div>
         <input

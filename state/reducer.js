@@ -29,6 +29,19 @@ const initialState = {
 }
 
 
+const guid = () => {
+  const s4 = () => {
+    return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
+  }
+
+  return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+    s4() + '-' + s4() + s4() + s4();
+}
+
+
+
 const dayDiff = (a, b) => {
   return Math.round((b - a) / (1000 * 60 * 60 * 24))
 }
@@ -124,13 +137,32 @@ const changeCurrentTask = (state, field, value) => {
 
 
 const saveCurrentTask = (state) => {
-  const tasks = [...state.tasks, state.currentTask]
-  localStorage.setItem("tasks", JSON.stringify(tasks))
+  if (state.currentTask.id) {
+    const tasks = state.tasks.map((task) => {
+      if (task.id === state.currentTask.id) {
+        return state.currentTask
+      } else {
+        return task
+      }
+    })
 
-  return {
-    ...state,
-    tasks,
-    currentTask: undefined
+    localStorage.setItem("tasks", JSON.stringify(tasks))
+    return {
+      ...state,
+      tasks,
+      currentTask: undefined
+    }
+  } else {
+    const currentTask = { ...state.currentTask, id: guid() }
+    const tasks = [...state.tasks, currentTask]
+
+
+    localStorage.setItem("tasks", JSON.stringify(tasks))
+    return {
+      ...state,
+      tasks,
+      currentTask: undefined
+    }
   }
 }
 
@@ -143,7 +175,18 @@ const closeCurrentTask = (state) => {
 }
 
 
+const showTask = (state, taskId) => {
+  const currentTask = state.tasks.filter(({ id }) => taskId === id)[0]
+  return {
+    ...state,
+    currentTask
+  }
+}
+
+
 export default (state = initialState, action) => {
+  console.log(action.type)
+
   switch (action.type) {
 
     case "ADD_TASK":
@@ -154,6 +197,9 @@ export default (state = initialState, action) => {
 
     case "SAVE_TASK":
       return setAnglesForTasks(saveCurrentTask(state))
+
+    case "SHOW_TASK":
+      return showTask(state, action.id)
 
     case "CLOSE_CURRENT_TASK":
       return closeCurrentTask(state)
