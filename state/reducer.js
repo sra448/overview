@@ -35,8 +35,19 @@ const generateSeparators = (state) => {
 }
 
 
+const changeDateField = (state, field, value) => {
+  return {
+    ...state,
+    [field]: new Date(value)
+  }
+}
+
+
 export default (state = initialState, action) => {
   switch (action.type) {
+
+    case "CHANGE_DATE_FIELD":
+      return generateSeparators(changeDateField(state, action.field, action.value))
 
     default:
       return generateSeparators(state)
