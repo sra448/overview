@@ -17779,6 +17779,16 @@ const showTask = (state, taskId) => {
   });
 };
 
+const deleteTask = (state, taskId) => {
+  const tasks = state.tasks.filter(({ id }) => id != taskId);
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+
+  return _extends({}, state, {
+    tasks,
+    currentTask: undefined
+  });
+};
+
 /* harmony default export */ __webpack_exports__["a"] = ((state = initialState, action) => {
   console.log(action.type);
 
@@ -17792,6 +17802,9 @@ const showTask = (state, taskId) => {
 
     case "SAVE_TASK":
       return setAnglesForTasks(saveCurrentTask(state));
+
+    case "DELETE_TASK":
+      return deleteTask(state, action.id);
 
     case "SHOW_TASK":
       return showTask(state, action.id);
@@ -26519,6 +26532,8 @@ var zipWith = /*#__PURE__*/Object(__WEBPACK_IMPORTED_MODULE_0__internal_curry3__
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_date_fns__ = __webpack_require__(447);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_date_fns___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_date_fns__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__circle__ = __webpack_require__(549);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__task_dialog__ = __webpack_require__(555);
+
 
 
 
@@ -26550,6 +26565,9 @@ const mapDispatchToProps = dispatch => {
     },
     showTask: id => () => {
       dispatch({ type: "SHOW_TASK", id });
+    },
+    deleteTask: id => () => {
+      dispatch({ type: "DELETE_TASK", id });
     }
   };
 };
@@ -26558,60 +26576,20 @@ const mapDispatchToProps = dispatch => {
 
 const main = state => {
   const { fromDate, toDate, height, rings, tasks, currentTask, separators } = state;
-  const { onChange, addTask, changeCurrentTask, saveCurrentTask, closeCurrentTask, showTask } = state;
+  const { changeCurrentTask, saveCurrentTask, closeCurrentTask, showTask, deleteTask } = state;
+  const { onChange, addTask } = state;
 
   return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
     "div",
     { className: "main" },
-    currentTask ? __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-      "div",
-      { className: "modal" },
-      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        "div",
-        null,
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-          "h2",
-          null,
-          "Add Task"
-        ),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-          "div",
-          null,
-          "Text",
-          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("input", { value: currentTask.text, onChange: changeCurrentTask("text") })
-        ),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-          "div",
-          null,
-          "Due At",
-          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("input", { type: "date", value: Object(__WEBPACK_IMPORTED_MODULE_2_date_fns__["format"])(currentTask.date, "YYYY-MM-DD"), onChange: changeCurrentTask("date") })
-        ),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-          "div",
-          null,
-          "Category",
-          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            "select",
-            { value: currentTask.category, onChange: changeCurrentTask("category") },
-            rings.map(({ name, color }) => __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-              "option",
-              { key: name, value: name },
-              name
-            ))
-          )
-        ),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-          "button",
-          { onClick: closeCurrentTask },
-          "Cancel"
-        ),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-          "button",
-          { onClick: saveCurrentTask },
-          "Save"
-        )
-      )
-    ) : undefined,
+    currentTask ? __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_4__task_dialog__["a" /* default */], {
+      task: currentTask,
+      categories: rings,
+      changeField: changeCurrentTask,
+      save: saveCurrentTask,
+      close: closeCurrentTask,
+      destroy: deleteTask
+    }) : undefined,
     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3__circle__["a" /* default */], {
       height: height,
       rings: rings,
@@ -30856,7 +30834,7 @@ exports = module.exports = __webpack_require__(552)(false);
 
 
 // module
-exports.push([module.i, "html, body {\n  height: 100%;\n  padding: 0;\n  margin: 0; }\n\n#container {\n  height: 100%; }\n\n.main {\n  text-align: center; }\n  .main > svg {\n    padding: 30px; }\n\n.modal {\n  position: absolute;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  left: 0;\n  background: rgba(0, 0, 0, 0.52); }\n  .modal > div {\n    padding: 20px;\n    background: white;\n    width: 260px; }\n\n.task {\n  cursor: pointer; }\n\n.task:hover {\n  opacity: 0.3; }\n", ""]);
+exports.push([module.i, "html, body {\n  height: 100%;\n  padding: 0;\n  margin: 0;\n  font-family: sans-serif; }\n\n#container {\n  height: 100%; }\n\n.main {\n  text-align: center; }\n  .main > svg {\n    padding: 30px; }\n\n.modal {\n  position: absolute;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  left: 0;\n  background: rgba(0, 0, 0, 0.52); }\n  .modal > div {\n    margin-top: -20%; }\n\n.dialog {\n  padding: 20px;\n  background: white;\n  width: 260px;\n  text-align: left; }\n  .dialog > h2 {\n    padding: 5px;\n    margin: 0;\n    margin-bottom: 10px;\n    font-size: 1.2em; }\n\n.form > div {\n  display: flex;\n  width: 100%;\n  padding: 5px; }\n  .form > div > label {\n    width: 100px;\n    font-size: 0.8em; }\n\n.footer {\n  display: flex;\n  background: #ebeae8;\n  margin: -20px;\n  margin-top: 18px;\n  padding: 15px 20px;\n  text-align: right; }\n  .footer .spacer {\n    flex: 1 1; }\n  .footer button {\n    margin: 0 5px;\n    padding: 5px; }\n\n.task {\n  cursor: pointer; }\n\n.task:hover {\n  opacity: 0.3; }\n", ""]);
 
 // exports
 
@@ -31404,6 +31382,108 @@ module.exports = function (css) {
 	// send back the fixed css
 	return fixedCss;
 };
+
+/***/ }),
+/* 555 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_date_fns__ = __webpack_require__(447);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_date_fns___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_date_fns__);
+
+
+
+/* harmony default export */ __webpack_exports__["a"] = (({ task, categories, changeField, save, close, destroy }) => {
+  return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+    "div",
+    { className: "modal" },
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      "div",
+      { className: "dialog" },
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        "h2",
+        null,
+        "Add Task"
+      ),
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        "div",
+        { className: "form" },
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          "div",
+          null,
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            "label",
+            null,
+            "Text"
+          ),
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("input", { value: task.text, onChange: changeField("text") })
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          "div",
+          null,
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            "label",
+            null,
+            "Due At"
+          ),
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("input", { type: "date", value: Object(__WEBPACK_IMPORTED_MODULE_1_date_fns__["format"])(task.date, "YYYY-MM-DD"), onChange: changeField("date") })
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          "div",
+          null,
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            "label",
+            null,
+            "Category"
+          ),
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            "select",
+            { value: task.category, onChange: changeField("category") },
+            categories.map(({ name, color }) => __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+              "option",
+              { key: name, value: name },
+              name
+            ))
+          )
+        )
+      ),
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        "div",
+        { className: "footer" },
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          "div",
+          null,
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            "button",
+            { onClick: destroy(task.id) },
+            "Delete"
+          )
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("div", { className: "spacer" }),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          "div",
+          null,
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            "button",
+            { onClick: close },
+            "Cancel"
+          )
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          "div",
+          null,
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            "button",
+            { onClick: save },
+            "Save"
+          )
+        )
+      )
+    )
+  );
+});
 
 /***/ })
 /******/ ]);

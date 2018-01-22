@@ -184,6 +184,18 @@ const showTask = (state, taskId) => {
 }
 
 
+const deleteTask = (state, taskId) => {
+  const tasks = state.tasks.filter(({ id }) => id != taskId)
+  localStorage.setItem("tasks", JSON.stringify(tasks))
+
+  return {
+    ...state,
+    tasks,
+    currentTask: undefined
+  }
+}
+
+
 export default (state = initialState, action) => {
   console.log(action.type)
 
@@ -197,6 +209,9 @@ export default (state = initialState, action) => {
 
     case "SAVE_TASK":
       return setAnglesForTasks(saveCurrentTask(state))
+
+    case "DELETE_TASK":
+      return deleteTask(state, action.id)
 
     case "SHOW_TASK":
       return showTask(state, action.id)

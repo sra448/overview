@@ -4,6 +4,7 @@ import { format } from "date-fns"
 
 
 import Circle from "./circle"
+import TaskDialog from "./task-dialog"
 
 
 require("./style.scss")
@@ -33,9 +34,15 @@ const mapDispatchToProps = (dispatch) => {
     },
     showTask: (id) => () => {
       dispatch({ type: "SHOW_TASK", id })
+    },
+    deleteTask: (id) => () => {
+      dispatch({ type: "DELETE_TASK", id })
     }
   }
 }
+
+
+
 
 
 
@@ -43,34 +50,20 @@ const mapDispatchToProps = (dispatch) => {
 
 const main = (state) => {
   const { fromDate, toDate, height, rings, tasks, currentTask, separators } = state
-  const { onChange, addTask, changeCurrentTask, saveCurrentTask, closeCurrentTask, showTask } = state
+  const { changeCurrentTask, saveCurrentTask, closeCurrentTask, showTask, deleteTask } = state
+  const { onChange, addTask } = state
 
   return (
     <div className="main">
       { currentTask ?
-          <div className="modal">
-            <div>
-              <h2>Add Task</h2>
-              <div>
-                Text
-                <input value={currentTask.text} onChange={changeCurrentTask("text")} />
-              </div>
-              <div>
-                Due At
-                <input type="date" value={format(currentTask.date, "YYYY-MM-DD")} onChange={changeCurrentTask("date")}  />
-              </div>
-              <div>
-                Category
-                <select value={currentTask.category} onChange={changeCurrentTask("category")}>
-                  { rings.map(({ name, color }) =>
-                    <option key={name} value={name}>{ name }</option>
-                  )}
-                </select>
-              </div >
-              <button onClick={closeCurrentTask}>Cancel</button>
-              <button onClick={saveCurrentTask}>Save</button>
-            </div>
-          </div>
+        <TaskDialog
+          task={currentTask}
+          categories={rings}
+          changeField={changeCurrentTask}
+          save={saveCurrentTask}
+          close={closeCurrentTask}
+          destroy={deleteTask}
+          />
         : undefined
        }
       <Circle
