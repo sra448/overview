@@ -28,7 +28,7 @@ const mapDispatchToProps = (dispatch) => {
 
 const main = ({ fromDate, toDate, height, rings, tasks, separators, onChange }) => {
   return (
-    <div>
+    <div className="main">
       <Circle
         height={height}
         rings={rings}

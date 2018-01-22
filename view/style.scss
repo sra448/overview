@@ -6,3 +6,11 @@ html, body {
 #container {
   height: 100%;
 }
+
+.main {
+  text-align: center;
+
+  > svg {
+    padding: 30px;
+  }
+}

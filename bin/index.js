@@ -15172,7 +15172,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 
 const initialState = {
-  height: 600,
+  height: 680,
   fromDate: new Date(),
   toDate: new Date().setFullYear(new Date().getFullYear() + 1),
   separators: [],
@@ -24004,7 +24004,7 @@ const mapDispatchToProps = dispatch => {
 const main = ({ fromDate, toDate, height, rings, tasks, separators, onChange }) => {
   return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
     "div",
-    null,
+    { className: "main" },
     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3__circle__["a" /* default */], {
       height: height,
       rings: rings,
@@ -24072,7 +24072,7 @@ exports = module.exports = __webpack_require__(392)(false);
 
 
 // module
-exports.push([module.i, "html, body {\n  height: 100%;\n  padding: 0; }\n\n#container {\n  height: 100%; }\n", ""]);
+exports.push([module.i, "html, body {\n  height: 100%;\n  padding: 0; }\n\n#container {\n  height: 100%; }\n\n.main {\n  text-align: center; }\n  .main > svg {\n    padding: 30px; }\n", ""]);
 
 // exports
 

@@ -2,7 +2,7 @@ import { range } from "ramda"
 
 
 const initialState = {
-  height: 600,
+  height: 680,
   fromDate: new Date(),
   toDate: new Date().setFullYear(new Date().getFullYear() + 1),
   separators: [],
