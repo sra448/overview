@@ -10,7 +10,7 @@ export default ({ task, categories, changeField, save, close, destroy }) => {
         <div className="form">
           <div>
             <label>Text</label>
-            <input value={task.text} onChange={changeField("text")} />
+            <input value={task.text} onChange={changeField("text")} autoFocus={true} />
           </div>
           <div>
             <label>Due At</label>

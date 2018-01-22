@@ -81,9 +81,11 @@ html, body {
 
 .task {
   cursor: pointer;
+  fill: rgba(255, 255, 255, 0.5);
+  stroke: rgba(0, 0, 0, 0.7);
 }
 
 .task:hover {
-  opacity: 0.3;
-  // transform: scale(100)
+  fill: rgba(255, 255, 255, 0.9);
+  stroke: rgba(0, 0, 0, 0.9);
 }

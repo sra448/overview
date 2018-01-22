@@ -22,7 +22,7 @@ const Rings = ({ rings, width, midPoint }) =>
 
 const Separators = ({ separators, midPoint, width }) =>
   <g>
-    <line x1={midPoint} y1={midPoint - width} x2={midPoint} y2={0} stroke="#00000040" />
+    <line x1={midPoint} y1={midPoint - width} x2={midPoint} y2={0} stroke="#00000040" strokeWidth="2" />
     { separators.map(([angle, _]) => {
       const x2 = midPoint + midPoint * Math.cos(Math.PI * angle / 180.0)
       const y2 = midPoint + midPoint * Math.sin(Math.PI * angle / 180.0)
@@ -37,25 +37,25 @@ const Separators = ({ separators, midPoint, width }) =>
 const Tasks = ({ rings, tasks, midPoint, width, showTask }) =>
   <g>
     { rings.map(({ name }, i) => {
-        const invserseI = rings.length - i + 1
-        return tasks
-          .filter(({ category }) => category === name)
-          .map(({ id, angle }) => {
-            const cx = midPoint + (invserseI * width - width/2) * Math.cos(Math.PI * angle / 180.0)
-            const cy = midPoint + (invserseI * width - width/2) * Math.sin(Math.PI * angle / 180.0)
+      const invserseI = rings.length - i + 1
+      return tasks
+        .filter(({ category }) => category === name)
+        .map(({ id, angle }) => {
+          const cx = midPoint + (invserseI * width - width/2) * Math.cos(Math.PI * angle / 180.0)
+          const cy = midPoint + (invserseI * width - width/2) * Math.sin(Math.PI * angle / 180.0)
 
-            return (
-              <circle
-                key={angle}
-                className="task"
-                cx={cx}
-                cy={cy}
-                r="6"
-                fill="black"
-                onClick={showTask(id)}
-                />
-              )
-          })
+          return (
+            <circle
+              key={angle}
+              className="task"
+              cx={cx}
+              cy={cy}
+              r="12"
+              fill="black"
+              onClick={showTask(id)}
+              />
+            )
+        })
       })
     }
   </g>
