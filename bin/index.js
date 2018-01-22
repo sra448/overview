@@ -15189,12 +15189,8 @@ const initialState = {
     name: "Recruitment",
     color: "#f0f8ff"
   }],
-  tasks: [{
-    category: "Culture",
-    date: "2018-03-01",
-    angle: undefined,
-    text: "Do something"
-  }]
+  tasks: JSON.parse(localStorage.getItem("tasks") || "[]"),
+  currentTask: undefined
 };
 
 const dayDiff = (a, b) => {
@@ -15256,8 +15252,56 @@ const getAngle = (daysTotal, daysDelta) => {
   }
 };
 
+const addTask = state => {
+  return _extends({}, state, {
+    currentTask: {
+      text: "",
+      date: new Date(),
+      category: "Culture"
+    }
+  });
+};
+
+const changeCurrentTask = (state, field, value) => {
+  const currentTask = _extends({}, state.currentTask, {
+    [field]: value
+  });
+
+  return _extends({}, state, {
+    currentTask
+  });
+};
+
+const saveCurrentTask = state => {
+  const tasks = [...state.tasks, state.currentTask];
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+
+  return _extends({}, state, {
+    tasks,
+    currentTask: undefined
+  });
+};
+
+const closeCurrentTask = state => {
+  return _extends({}, state, {
+    currentTask: undefined
+  });
+};
+
 /* harmony default export */ __webpack_exports__["a"] = ((state = initialState, action) => {
   switch (action.type) {
+
+    case "ADD_TASK":
+      return addTask(state);
+
+    case "CHANGE_TASK_FIELD":
+      return changeCurrentTask(state, action.field, action.value);
+
+    case "SAVE_TASK":
+      return setAnglesForTasks(saveCurrentTask(state));
+
+    case "CLOSE_CURRENT_TASK":
+      return closeCurrentTask(state);
 
     case "CHANGE_DATE_FIELD":
       return setAnglesForTasks(generateSeparators(changeDateField(state, action.field, action.value)));
@@ -23995,16 +24039,80 @@ const mapDispatchToProps = dispatch => {
   return {
     onChange: field => ({ target }) => {
       dispatch({ type: "CHANGE_DATE_FIELD", field, value: target.value });
+    },
+    addTask: () => {
+      dispatch({ type: "ADD_TASK" });
+    },
+    changeCurrentTask: field => ({ target }) => {
+      dispatch({ type: "CHANGE_TASK_FIELD", field, value: target.value });
+    },
+    saveCurrentTask: () => {
+      dispatch({ type: "SAVE_TASK" });
+    },
+    closeCurrentTask: () => {
+      dispatch({ type: "CLOSE_CURRENT_TASK" });
     }
   };
 };
 
 // Main Component
 
-const main = ({ fromDate, toDate, height, rings, tasks, separators, onChange }) => {
+const main = state => {
+  const { fromDate, toDate, height, rings, tasks, currentTask, separators } = state;
+  const { onChange, addTask, changeCurrentTask, saveCurrentTask, closeCurrentTask } = state;
+
   return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
     "div",
     { className: "main" },
+    currentTask ? __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      "div",
+      { className: "modal" },
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        "div",
+        null,
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          "h2",
+          null,
+          "Add Task"
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          "div",
+          null,
+          "Text",
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("input", { value: currentTask.text, onChange: changeCurrentTask("text") })
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          "div",
+          null,
+          "Due At",
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("input", { type: "date", value: Object(__WEBPACK_IMPORTED_MODULE_2_date_fns__["format"])(currentTask.date, "YYYY-MM-DD"), onChange: changeCurrentTask("date") })
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          "div",
+          null,
+          "Category",
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            "select",
+            { value: currentTask.category, onChange: changeCurrentTask("category") },
+            rings.map(({ name, color }) => __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+              "option",
+              { key: name, value: name },
+              name
+            ))
+          )
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          "button",
+          { onClick: closeCurrentTask },
+          "Cancel"
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          "button",
+          { onClick: saveCurrentTask },
+          "Add"
+        )
+      )
+    ) : undefined,
     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3__circle__["a" /* default */], {
       height: height,
       rings: rings,
@@ -24024,6 +24132,15 @@ const main = ({ fromDate, toDate, height, rings, tasks, separators, onChange }) 
         value: Object(__WEBPACK_IMPORTED_MODULE_2_date_fns__["format"])(toDate, "YYYY-MM-DD"),
         onChange: onChange("toDate")
       })
+    ),
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      "div",
+      null,
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        "button",
+        { onClick: addTask },
+        "+ Task"
+      )
     )
   );
 };
@@ -24072,7 +24189,7 @@ exports = module.exports = __webpack_require__(392)(false);
 
 
 // module
-exports.push([module.i, "html, body {\n  height: 100%;\n  padding: 0; }\n\n#container {\n  height: 100%; }\n\n.main {\n  text-align: center; }\n  .main > svg {\n    padding: 30px; }\n", ""]);
+exports.push([module.i, "html, body {\n  height: 100%;\n  padding: 0;\n  margin: 0; }\n\n#container {\n  height: 100%; }\n\n.main {\n  text-align: center; }\n  .main > svg {\n    padding: 30px; }\n\n.modal {\n  position: absolute;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  left: 0;\n  background: rgba(0, 0, 0, 0.52); }\n  .modal > div {\n    padding: 20px;\n    background: white;\n    width: 260px; }\n", ""]);
 
 // exports
 
@@ -31215,12 +31332,10 @@ const Tasks = ({ rings, tasks, midPoint, width }) => __WEBPACK_IMPORTED_MODULE_0
   "g",
   null,
   rings.map(({ name }, i) => {
-    const invserseI = rings.length - i;
+    const invserseI = rings.length - i + 1;
     return tasks.filter(({ category }) => category === name).map(({ angle }) => {
       const cx = midPoint + (invserseI * width - width / 2) * Math.cos(Math.PI * angle / 180.0);
       const cy = midPoint + (invserseI * width - width / 2) * Math.sin(Math.PI * angle / 180.0);
-
-      // debugger
 
       return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("circle", {
         key: angle,

@@ -1,6 +1,7 @@
 html, body {
   height: 100%;
   padding: 0;
+  margin: 0;
 }
 
 #container {
@@ -12,5 +13,23 @@ html, body {
 
   > svg {
     padding: 30px;
+  }
+}
+
+.modal {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.52);
+
+  > div {
+    padding: 20px;
+    background: white;
+    width: 260px;
   }
 }

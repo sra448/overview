@@ -37,15 +37,13 @@ const Separators = ({ separators, midPoint, width }) =>
 const Tasks = ({ rings, tasks, midPoint, width }) =>
   <g>
     { rings.map(({ name }, i) => {
-        const invserseI = rings.length - i
+        const invserseI = rings.length - i + 1
         return tasks
           .filter(({ category }) => category === name)
           .map(({ angle }) => {
             const cx = midPoint + (invserseI * width - width/2) * Math.cos(Math.PI * angle / 180.0)
             const cy = midPoint + (invserseI * width - width/2) * Math.sin(Math.PI * angle / 180.0)
-
-            // debugger
-
+            
             return (
               <circle
                 key={angle}

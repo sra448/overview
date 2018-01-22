@@ -24,14 +24,8 @@ const initialState = {
       color: "#f0f8ff"
     }
   ],
-  tasks: [
-    {
-      category: "Culture",
-      date: "2018-03-01",
-      angle: undefined,
-      text: "Do something"
-    }
-  ]
+  tasks: JSON.parse(localStorage.getItem("tasks") || "[]"),
+  currentTask: undefined
 }
 
 
@@ -104,8 +98,65 @@ const getAngle = (daysTotal, daysDelta) => {
 }
 
 
+const addTask = (state) => {
+  return {
+    ...state,
+    currentTask: {
+      text: "",
+      date: new Date(),
+      category: "Culture"
+    }
+  }
+}
+
+
+const changeCurrentTask = (state, field, value) => {
+  const currentTask = {
+    ...state.currentTask,
+    [field]: value
+  }
+
+  return {
+    ...state,
+    currentTask
+  }
+}
+
+
+const saveCurrentTask = (state) => {
+  const tasks = [...state.tasks, state.currentTask]
+  localStorage.setItem("tasks", JSON.stringify(tasks))
+
+  return {
+    ...state,
+    tasks,
+    currentTask: undefined
+  }
+}
+
+
+const closeCurrentTask = (state) => {
+  return {
+    ...state,
+    currentTask: undefined
+  }
+}
+
+
 export default (state = initialState, action) => {
   switch (action.type) {
+
+    case "ADD_TASK":
+      return addTask(state)
+
+    case "CHANGE_TASK_FIELD":
+      return changeCurrentTask(state, action.field, action.value)
+
+    case "SAVE_TASK":
+      return setAnglesForTasks(saveCurrentTask(state))
+
+    case "CLOSE_CURRENT_TASK":
+      return closeCurrentTask(state)
 
     case "CHANGE_DATE_FIELD":
       return setAnglesForTasks(generateSeparators(changeDateField(state, action.field, action.value)))
