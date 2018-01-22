@@ -34,34 +34,62 @@ const Separators = ({ separators, midPoint, width }) =>
   </g>
 
 
-const Tasks = ({ rings, tasks, midPoint, width, showTask }) =>
+const Tasks = ({ rings, tasks, midPoint, width, hoveredTask, showTask, showTooltip, hideTooltip }) =>
   <g>
     { rings.map(({ name }, i) => {
       const invserseI = rings.length - i + 1
       return tasks
         .filter(({ category }) => category === name)
-        .map(({ id, angle }) => {
+        .map(({ id, angle, text }) => {
           const cx = midPoint + (invserseI * width - width/2) * Math.cos(Math.PI * angle / 180.0)
           const cy = midPoint + (invserseI * width - width/2) * Math.sin(Math.PI * angle / 180.0)
 
-          return (
-            <circle
-              key={angle}
-              className="task"
-              cx={cx}
-              cy={cy}
-              r="12"
-              fill="black"
-              onClick={showTask(id)}
-              />
-            )
+          if (hoveredTask === id) {
+            return [
+              <rect
+                key={`${id}-tooltip`}
+                className="tooltip"
+                x={cx - 60}
+                y={cy - 50}
+                width={120}
+                height={30} />,
+              <text
+                key={`${id}-text`}
+                className="tooltip-text"
+                x={cx}
+                y={cy - 35}>{text}</text>,
+              <circle
+                key={id}
+                className="task"
+                cx={cx}
+                cy={cy}
+                fill="black"
+                onClick={showTask(id)}
+                onMouseOver={showTooltip(id)}
+                onMouseOut={hideTooltip}
+                />
+            ]
+          } else {
+            return (
+              <circle
+                key={angle}
+                className="task"
+                cx={cx}
+                cy={cy}
+                fill="black"
+                onClick={showTask(id)}
+                onMouseOver={showTooltip(id)}
+                onMouseOut={hideTooltip}
+                />
+              )
+          }
         })
       })
     }
   </g>
 
 
-export default ({ height, rings, tasks, separators, showTask }) => {
+export default ({ height, rings, tasks, separators, hoveredTask, showTask, showTooltip, hideTooltip }) => {
   const midPoint = height / 2
   const width = midPoint / (rings.length + 1)
   const ringsAndCenter = [...rings, { color: "#fff" }]
@@ -70,7 +98,16 @@ export default ({ height, rings, tasks, separators, showTask }) => {
     <svg height={height} width={height}>
       <Rings rings={ringsAndCenter} width={width} midPoint={midPoint} />
       <Separators separators={separators} width={width} midPoint={midPoint} />
-      <Tasks rings={rings} tasks={tasks} width={width} midPoint={midPoint} showTask={showTask} />
+      <Tasks
+        rings={rings}
+        tasks={tasks}
+        width={width}
+        midPoint={midPoint}
+        hoveredTask={hoveredTask}
+        showTask={showTask}
+        showTooltip={showTooltip}
+        hideTooltip={hideTooltip}
+        />
     </svg>
   )
 }

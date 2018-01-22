@@ -83,9 +83,23 @@ html, body {
   cursor: pointer;
   fill: rgba(255, 255, 255, 0.5);
   stroke: rgba(0, 0, 0, 0.7);
+  r: 12;
+  transition: all 0.2s;
 }
 
 .task:hover {
   fill: rgba(255, 255, 255, 0.9);
   stroke: rgba(0, 0, 0, 0.9);
+  r: 15;
+}
+
+
+.tooltip {
+  fill: rgba(255, 255, 255, 0.6);
+
+}
+
+.tooltip-text {
+  font-size: 12px;
+  text-anchor: middle;
 }

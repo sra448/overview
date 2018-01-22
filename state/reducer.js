@@ -1,31 +1,35 @@
 import { range } from "ramda"
 
 
+const defaultRings = [
+  {
+    name: "Culture",
+    color: "#bed4e6"
+  },
+  {
+    name: "Education",
+    color: "#ccdfee"
+  },
+  {
+    name: "Organization",
+    color: "#dcecf9"
+  },
+  {
+    name: "Recruitment",
+    color: "#f0f8ff"
+  }
+]
+
+
 const initialState = {
   height: 680,
   fromDate: new Date(),
   toDate: new Date().setFullYear(new Date().getFullYear() + 1),
   separators: [],
-  rings: [
-    {
-      name: "Culture",
-      color: "#bed4e6"
-    },
-    {
-      name: "Education",
-      color: "#ccdfee"
-    },
-    {
-      name: "Organization",
-      color: "#dcecf9"
-    },
-    {
-      name: "Recruitment",
-      color: "#f0f8ff"
-    }
-  ],
+  rings: defaultRings,
   tasks: JSON.parse(localStorage.getItem("tasks") || "[]"),
-  currentTask: undefined
+  currentTask: undefined,
+  hoveredTask: undefined
 }
 
 
@@ -196,8 +200,24 @@ const deleteTask = (state, taskId) => {
 }
 
 
+const showTooltip = (state, taskId) => {
+  return {
+    ...state,
+    hoveredTask: taskId
+  }
+}
+
+
+const hideTooltip = (state) => {
+  return {
+    ...state,
+    hoveredTask: undefined
+  }
+}
+
+
 export default (state = initialState, action) => {
-  console.log(action.type)
+  console.log(action)
 
   switch (action.type) {
 
@@ -218,6 +238,12 @@ export default (state = initialState, action) => {
 
     case "CLOSE_CURRENT_TASK":
       return closeCurrentTask(state)
+
+    case "SHOW_TASK_TOOLTIP":
+      return showTooltip(state, action.id)
+
+    case "HIDE_TASK_TOOLTIP":
+      return hideTooltip(state)
 
     case "CHANGE_DATE_FIELD":
       return setAnglesForTasks(generateSeparators(changeDateField(state, action.field, action.value)))

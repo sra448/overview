@@ -17630,26 +17630,29 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 
 
+const defaultRings = [{
+  name: "Culture",
+  color: "#bed4e6"
+}, {
+  name: "Education",
+  color: "#ccdfee"
+}, {
+  name: "Organization",
+  color: "#dcecf9"
+}, {
+  name: "Recruitment",
+  color: "#f0f8ff"
+}];
+
 const initialState = {
   height: 680,
   fromDate: new Date(),
   toDate: new Date().setFullYear(new Date().getFullYear() + 1),
   separators: [],
-  rings: [{
-    name: "Culture",
-    color: "#bed4e6"
-  }, {
-    name: "Education",
-    color: "#ccdfee"
-  }, {
-    name: "Organization",
-    color: "#dcecf9"
-  }, {
-    name: "Recruitment",
-    color: "#f0f8ff"
-  }],
+  rings: defaultRings,
   tasks: JSON.parse(localStorage.getItem("tasks") || "[]"),
-  currentTask: undefined
+  currentTask: undefined,
+  hoveredTask: undefined
 };
 
 const guid = () => {
@@ -17789,8 +17792,20 @@ const deleteTask = (state, taskId) => {
   });
 };
 
+const showTooltip = (state, taskId) => {
+  return _extends({}, state, {
+    hoveredTask: taskId
+  });
+};
+
+const hideTooltip = state => {
+  return _extends({}, state, {
+    hoveredTask: undefined
+  });
+};
+
 /* harmony default export */ __webpack_exports__["a"] = ((state = initialState, action) => {
-  console.log(action.type);
+  console.log(action);
 
   switch (action.type) {
 
@@ -17811,6 +17826,12 @@ const deleteTask = (state, taskId) => {
 
     case "CLOSE_CURRENT_TASK":
       return closeCurrentTask(state);
+
+    case "SHOW_TASK_TOOLTIP":
+      return showTooltip(state, action.id);
+
+    case "HIDE_TASK_TOOLTIP":
+      return hideTooltip(state);
 
     case "CHANGE_DATE_FIELD":
       return setAnglesForTasks(generateSeparators(changeDateField(state, action.field, action.value)));
@@ -26568,6 +26589,12 @@ const mapDispatchToProps = dispatch => {
     },
     deleteTask: id => () => {
       dispatch({ type: "DELETE_TASK", id });
+    },
+    showTaskTooltip: id => () => {
+      dispatch({ type: "SHOW_TASK_TOOLTIP", id });
+    },
+    hideTaskTooltip: () => {
+      dispatch({ type: "HIDE_TASK_TOOLTIP" });
     }
   };
 };
@@ -26577,7 +26604,7 @@ const mapDispatchToProps = dispatch => {
 const main = state => {
   const { fromDate, toDate, height, rings, tasks, currentTask, separators } = state;
   const { changeCurrentTask, saveCurrentTask, closeCurrentTask, showTask, deleteTask } = state;
-  const { onChange, addTask } = state;
+  const { onChange, addTask, showTaskTooltip, hideTaskTooltip, hoveredTask } = state;
 
   return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
     "div",
@@ -26595,7 +26622,10 @@ const main = state => {
       rings: rings,
       tasks: tasks,
       separators: separators,
-      showTask: showTask
+      hoveredTask: hoveredTask,
+      showTask: showTask,
+      showTooltip: showTaskTooltip,
+      hideTooltip: hideTaskTooltip
     }),
     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
       "div",
@@ -30749,7 +30779,7 @@ const Rings = ({ rings, width, midPoint }) => __WEBPACK_IMPORTED_MODULE_0_react_
 const Separators = ({ separators, midPoint, width }) => __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
   "g",
   null,
-  __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("line", { x1: midPoint, y1: midPoint - width, x2: midPoint, y2: 0, stroke: "#00000040" }),
+  __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("line", { x1: midPoint, y1: midPoint - width, x2: midPoint, y2: 0, stroke: "#00000040", strokeWidth: "2" }),
   separators.map(([angle, _]) => {
     const x2 = midPoint + midPoint * Math.cos(Math.PI * angle / 180.0);
     const y2 = midPoint + midPoint * Math.sin(Math.PI * angle / 180.0);
@@ -30758,29 +30788,57 @@ const Separators = ({ separators, midPoint, width }) => __WEBPACK_IMPORTED_MODUL
   })
 );
 
-const Tasks = ({ rings, tasks, midPoint, width, showTask }) => __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+const Tasks = ({ rings, tasks, midPoint, width, hoveredTask, showTask, showTooltip, hideTooltip }) => __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
   "g",
   null,
   rings.map(({ name }, i) => {
     const invserseI = rings.length - i + 1;
-    return tasks.filter(({ category }) => category === name).map(({ id, angle }) => {
+    return tasks.filter(({ category }) => category === name).map(({ id, angle, text }) => {
       const cx = midPoint + (invserseI * width - width / 2) * Math.cos(Math.PI * angle / 180.0);
       const cy = midPoint + (invserseI * width - width / 2) * Math.sin(Math.PI * angle / 180.0);
 
-      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("circle", {
-        key: angle,
-        className: "task",
-        cx: cx,
-        cy: cy,
-        r: "6",
-        fill: "black",
-        onClick: showTask(id)
-      });
+      if (hoveredTask === id) {
+        return [__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("rect", {
+          key: `${id}-tooltip`,
+          className: "tooltip",
+          x: cx - 60,
+          y: cy - 50,
+          width: 120,
+          height: 30 }), __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          "text",
+          {
+            key: `${id}-text`,
+            className: "tooltip-text",
+            x: cx,
+            y: cy - 35 },
+          text
+        ), __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("circle", {
+          key: id,
+          className: "task",
+          cx: cx,
+          cy: cy,
+          fill: "black",
+          onClick: showTask(id),
+          onMouseOver: showTooltip(id),
+          onMouseOut: hideTooltip
+        })];
+      } else {
+        return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("circle", {
+          key: angle,
+          className: "task",
+          cx: cx,
+          cy: cy,
+          fill: "black",
+          onClick: showTask(id),
+          onMouseOver: showTooltip(id),
+          onMouseOut: hideTooltip
+        });
+      }
     });
   })
 );
 
-/* harmony default export */ __webpack_exports__["a"] = (({ height, rings, tasks, separators, showTask }) => {
+/* harmony default export */ __webpack_exports__["a"] = (({ height, rings, tasks, separators, hoveredTask, showTask, showTooltip, hideTooltip }) => {
   const midPoint = height / 2;
   const width = midPoint / (rings.length + 1);
   const ringsAndCenter = [...rings, { color: "#fff" }];
@@ -30790,7 +30848,16 @@ const Tasks = ({ rings, tasks, midPoint, width, showTask }) => __WEBPACK_IMPORTE
     { height: height, width: height },
     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(Rings, { rings: ringsAndCenter, width: width, midPoint: midPoint }),
     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(Separators, { separators: separators, width: width, midPoint: midPoint }),
-    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(Tasks, { rings: rings, tasks: tasks, width: width, midPoint: midPoint, showTask: showTask })
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(Tasks, {
+      rings: rings,
+      tasks: tasks,
+      width: width,
+      midPoint: midPoint,
+      hoveredTask: hoveredTask,
+      showTask: showTask,
+      showTooltip: showTooltip,
+      hideTooltip: hideTooltip
+    })
   );
 });
 
@@ -30834,7 +30901,7 @@ exports = module.exports = __webpack_require__(552)(false);
 
 
 // module
-exports.push([module.i, "html, body {\n  height: 100%;\n  padding: 0;\n  margin: 0;\n  font-family: sans-serif; }\n\n#container {\n  height: 100%; }\n\n.main {\n  text-align: center; }\n  .main > svg {\n    padding: 30px; }\n\n.modal {\n  position: absolute;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  left: 0;\n  background: rgba(0, 0, 0, 0.52); }\n  .modal > div {\n    margin-top: -20%; }\n\n.dialog {\n  padding: 20px;\n  background: white;\n  width: 260px;\n  text-align: left; }\n  .dialog > h2 {\n    padding: 5px;\n    margin: 0;\n    margin-bottom: 10px;\n    font-size: 1.2em; }\n\n.form > div {\n  display: flex;\n  width: 100%;\n  padding: 5px; }\n  .form > div > label {\n    width: 100px;\n    font-size: 0.8em; }\n\n.footer {\n  display: flex;\n  background: #ebeae8;\n  margin: -20px;\n  margin-top: 18px;\n  padding: 15px 20px;\n  text-align: right; }\n  .footer .spacer {\n    flex: 1 1; }\n  .footer button {\n    margin: 0 5px;\n    padding: 5px; }\n\n.task {\n  cursor: pointer; }\n\n.task:hover {\n  opacity: 0.3; }\n", ""]);
+exports.push([module.i, "html, body {\n  height: 100%;\n  padding: 0;\n  margin: 0;\n  font-family: sans-serif; }\n\n#container {\n  height: 100%; }\n\n.main {\n  text-align: center; }\n  .main > svg {\n    padding: 30px; }\n\n.modal {\n  position: absolute;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  left: 0;\n  background: rgba(0, 0, 0, 0.52); }\n  .modal > div {\n    margin-top: -20%; }\n\n.dialog {\n  padding: 20px;\n  background: white;\n  width: 260px;\n  text-align: left; }\n  .dialog > h2 {\n    padding: 5px;\n    margin: 0;\n    margin-bottom: 10px;\n    font-size: 1.2em; }\n\n.form > div {\n  display: flex;\n  width: 100%;\n  padding: 5px; }\n  .form > div > label {\n    width: 100px;\n    font-size: 0.8em; }\n\n.footer {\n  display: flex;\n  background: #ebeae8;\n  margin: -20px;\n  margin-top: 18px;\n  padding: 15px 20px;\n  text-align: right; }\n  .footer .spacer {\n    flex: 1 1; }\n  .footer button {\n    margin: 0 5px;\n    padding: 5px; }\n\n.task {\n  cursor: pointer;\n  fill: rgba(255, 255, 255, 0.5);\n  stroke: rgba(0, 0, 0, 0.7);\n  r: 12;\n  transition: all 0.2s; }\n\n.task:hover {\n  fill: rgba(255, 255, 255, 0.9);\n  stroke: rgba(0, 0, 0, 0.9);\n  r: 15; }\n\n.tooltip {\n  fill: rgba(255, 255, 255, 0.6); }\n\n.tooltip-text {\n  font-size: 12px;\n  text-anchor: middle; }\n", ""]);
 
 // exports
 
@@ -31418,7 +31485,7 @@ module.exports = function (css) {
             null,
             "Text"
           ),
-          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("input", { value: task.text, onChange: changeField("text") })
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("input", { value: task.text, onChange: changeField("text"), autoFocus: true })
         ),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           "div",

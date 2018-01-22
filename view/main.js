@@ -37,6 +37,12 @@ const mapDispatchToProps = (dispatch) => {
     },
     deleteTask: (id) => () => {
       dispatch({ type: "DELETE_TASK", id })
+    },
+    showTaskTooltip: (id) => () => {
+      dispatch({ type: "SHOW_TASK_TOOLTIP", id })
+    },
+    hideTaskTooltip: () => {
+      dispatch({ type: "HIDE_TASK_TOOLTIP" })
     }
   }
 }
@@ -51,7 +57,7 @@ const mapDispatchToProps = (dispatch) => {
 const main = (state) => {
   const { fromDate, toDate, height, rings, tasks, currentTask, separators } = state
   const { changeCurrentTask, saveCurrentTask, closeCurrentTask, showTask, deleteTask } = state
-  const { onChange, addTask } = state
+  const { onChange, addTask, showTaskTooltip, hideTaskTooltip, hoveredTask } = state
 
   return (
     <div className="main">
@@ -71,7 +77,10 @@ const main = (state) => {
         rings={rings}
         tasks={tasks}
         separators={separators}
+        hoveredTask={hoveredTask}
         showTask={showTask}
+        showTooltip={showTaskTooltip}
+        hideTooltip={hideTaskTooltip}
         />
       <div>
         <input
