@@ -1,4 +1,20 @@
 import React from "react"
+import { filter, identity } from "ramda"
+
+
+
+// Some usefull functions
+
+
+const radiusEndpoint = (midPoint, angle, width) =>{
+  const x = midPoint + width * Math.cos(Math.PI * angle / 180.0)
+  const y = midPoint + width * Math.sin(Math.PI * angle / 180.0)
+  return [x, y]
+}
+
+
+
+// Components
 
 
 const Rings = ({ rings, width, midPoint }) =>
@@ -22,16 +38,38 @@ const Rings = ({ rings, width, midPoint }) =>
 
 const Separators = ({ separators, midPoint, width }) =>
   <g>
-    <line x1={midPoint} y1={midPoint - width} x2={midPoint} y2={0} stroke="#00000040" strokeWidth="2" />
-    { separators.map(([angle, _]) => {
-      const x2 = midPoint + midPoint * Math.cos(Math.PI * angle / 180.0)
-      const y2 = midPoint + midPoint * Math.sin(Math.PI * angle / 180.0)
-
-      return (
-        <line key={angle} x1={midPoint} y1={midPoint} x2={x2} y2={y2} stroke="#fff" />
+    { separators.map(([angle, _]) =>
+        <RadiusLine key={angle} midPoint={midPoint} angle={angle} />
       )
-    }) }
+    }
+    <NowLine midPoint={midPoint} width={width} />
   </g>
+
+
+const RadiusLine = ({ midPoint, angle }) => {
+  const [x2, y2] = radiusEndpoint(midPoint, angle, midPoint)
+
+  return (
+    <line
+      x1={midPoint}
+      y1={midPoint}
+      x2={x2}
+      y2={y2}
+      stroke="#fff"
+      />
+    )
+}
+
+
+const NowLine = ({ midPoint, width }) =>
+  <line
+    x1={midPoint}
+    y1={midPoint - width}
+    x2={midPoint}
+    y2={0}
+    stroke="#00000040"
+    strokeWidth="2"
+    />
 
 
 const Tasks = ({ rings, tasks, midPoint, width, hoveredTask, showTask, showTooltip, hideTooltip }) =>
@@ -41,63 +79,74 @@ const Tasks = ({ rings, tasks, midPoint, width, hoveredTask, showTask, showToolt
       return tasks
         .filter(({ category }) => category === name)
         .map(({ id, angle, text }) => {
-          const cx = midPoint + (invserseI * width - width/2) * Math.cos(Math.PI * angle / 180.0)
-          const cy = midPoint + (invserseI * width - width/2) * Math.sin(Math.PI * angle / 180.0)
+          const [cx, cy] = radiusEndpoint(midPoint, angle, invserseI * width - width / 2)
 
-          if (hoveredTask === id) {
-            return [
-              <rect
-                key={`${id}-tooltip`}
-                className="tooltip"
-                x={cx - 60}
-                y={cy - 50}
-                width={120}
-                height={30} />,
-              <text
-                key={`${id}-text`}
-                className="tooltip-text"
-                x={cx}
-                y={cy - 35}>{text}</text>,
-              <circle
-                key={id}
-                className="task"
-                cx={cx}
-                cy={cy}
-                fill="black"
-                onClick={showTask(id)}
-                onMouseOver={showTooltip(id)}
-                onMouseOut={hideTooltip}
-                />
-            ]
-          } else {
-            return (
-              <circle
-                key={angle}
-                className="task"
-                cx={cx}
-                cy={cy}
-                fill="black"
-                onClick={showTask(id)}
-                onMouseOver={showTooltip(id)}
-                onMouseOut={hideTooltip}
-                />
-              )
-          }
+          return filter(identity, [
+            <circle
+              key={id}
+              className="task"
+              cx={cx}
+              cy={cy}
+              onClick={showTask(id)}
+              onMouseOver={showTooltip(id)}
+              onMouseOut={hideTooltip}
+              />,
+            hoveredTask === id ?
+              <ToolTip key="tooltip" text={text} cx={cx} cy={cy} />
+              : undefined
+          ])
         })
       })
     }
   </g>
 
 
-export default ({ height, rings, tasks, separators, hoveredTask, showTask, showTooltip, hideTooltip }) => {
+const ToolTip = ({ text, cx, cy }) => {
+  return [
+    <rect
+      key="tooltip-bg"
+      className="tooltip"
+      x={cx - 60}
+      y={cy - 50}
+      width={120}
+      height={30}
+      />,
+    <text
+      key="tooltip-text"
+      className="tooltip-text"
+      x={cx}
+      y={cy - 35}
+      >
+      {text}
+    </text>
+  ]
+}
+
+
+
+// Main Component
+
+
+export default (state) => {
+  const { height, rings, tasks, separators, hoveredTask } = state
+  const { showTask, showTooltip, hideTooltip } = state
+
   const midPoint = height / 2
   const width = midPoint / (rings.length + 1)
   const ringsAndCenter = [...rings, { color: "#fff" }]
 
   return (
     <svg height={height} width={height}>
-      <Rings rings={ringsAndCenter} width={width} midPoint={midPoint} />
-      <Separators separators={separators} width={width} midPoint={midPoint} />
+      <Rings
+        rings={ringsAndCenter}
+        width={width}
+        midPoint={midPoint}
+        />
+      <Separators
+        separators={separators}
+        width={width}
+        midPoint={midPoint}
+        />
       <Tasks
         rings={rings}
         tasks={tasks}

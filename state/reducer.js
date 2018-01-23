@@ -228,7 +228,8 @@ export default (state = initialState, action) => {
       return changeCurrentTask(state, action.field, action.value)
 
     case "SAVE_TASK":
-      return setAnglesForTasks(saveCurrentTask(state))
+      return setAnglesForTasks(
+        saveCurrentTask(state))
 
     case "DELETE_TASK":
       return deleteTask(state, action.id)
@@ -246,9 +247,12 @@ export default (state = initialState, action) => {
       return hideTooltip(state)
 
     case "CHANGE_DATE_FIELD":
-      return setAnglesForTasks(generateSeparators(changeDateField(state, action.field, action.value)))
+      return setAnglesForTasks(
+        generateSeparators(
+          changeDateField(state, action.field, action.value)))
 
     default:
-      return setAnglesForTasks(generateSeparators(state))
+      return setAnglesForTasks(
+        generateSeparators(state))
   }
 }
