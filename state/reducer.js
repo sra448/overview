@@ -1,4 +1,5 @@
 import { range } from "ramda"
+import { format } from "date-fns"
 
 
 const defaultRings = [
@@ -60,7 +61,7 @@ const generateSeparators = (state) => {
 
     if (date.getDate() === 1) {
       const angle = getAngle(days, x)
-      return [...acc, [angle, date.getMonth()]]
+      return [...acc, [angle, format(date, "MMM YY")]]
     } else {
       return acc
     }

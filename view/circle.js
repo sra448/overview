@@ -46,6 +46,26 @@ const Separators = ({ separators, midPoint, width }) =>
   </g>
 
 
+const SegmentTitles = ({ separators, midPoint }) =>
+  <g>
+    { separators.map(([angle, title]) => {
+        const [x, y] = radiusEndpoint(midPoint, angle + 1, midPoint + 6)
+
+        return (
+          <text
+            key={angle}
+            x={x}
+            y={y}
+            fontSize="11"
+            transform={`rotate(${angle + 92 % 360}, ${x}, ${y})`}>
+            {title}
+          </text>
+        )
+      })
+    }
+  </g>
+
+
 const RadiusLine = ({ midPoint, angle }) => {
   const [x2, y2] = radiusEndpoint(midPoint, angle, midPoint)
 
@@ -144,7 +164,11 @@ export default (state) => {
         />
       <Separators
         separators={separators}
+        midPoint={midPoint}
         width={width}
+        />
+      <SegmentTitles
+        separators={separators}
         midPoint={midPoint}
         />
       <Tasks
