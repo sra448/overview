@@ -1,6 +1,6 @@
 import React from "react"
 import { connect } from "react-redux"
-import { format } from "date-fns"
+import { format, parse } from "date-fns"
 
 
 import Circle from "./circle"
@@ -59,6 +59,11 @@ const main = (state) => {
   const { changeCurrentTask, saveCurrentTask, closeCurrentTask, showTask, deleteTask } = state
   const { onChange, addTask, showTaskTooltip, hideTaskTooltip, hoveredTask } = state
 
+  const visibleTasks = tasks.filter((task) => {
+    const date = parse(task.date)
+    return date >= fromDate && date <= toDate
+  })
+
   return (
     <div className="main">
       { currentTask ?
@@ -75,7 +80,7 @@ const main = (state) => {
       <Circle
         height={height}
         rings={rings}
-        tasks={tasks}
+        tasks={visibleTasks}
         separators={separators}
         hoveredTask={hoveredTask}
         showTask={showTask}
