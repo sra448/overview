@@ -15,6 +15,7 @@ html, body {
 
   > svg {
     padding: 30px;
+    user-select: none;
   }
 }
 
@@ -80,26 +81,30 @@ html, body {
 }
 
 .task {
-  cursor: pointer;
-  fill: rgba(255, 255, 255, 0.5);
-  stroke: rgba(0, 0, 0, 0.7);
-  r: 12;
-  transition: all 0.2s;
+  .main {
+    cursor: pointer;
+    fill: rgba(255, 255, 255, 0.5);
+    stroke: rgba(0, 0, 0, 0.6);
+    r: 12;
+    transition: all 1s;
+  }
+
+  .tooltip {
+    fill: rgba(255, 255, 255, 0.6);
+
+  }
+
+  .tooltip-text {
+    font-size: 12px;
+    text-anchor: middle;
+  }
 }
 
 .task:hover {
-  fill: rgba(255, 255, 255, 0.9);
-  stroke: rgba(0, 0, 0, 0.9);
-  r: 15;
-}
-
-
-.tooltip {
-  fill: rgba(255, 255, 255, 0.6);
-
-}
-
-.tooltip-text {
-  font-size: 12px;
-  text-anchor: middle;
+  .main {
+    fill: rgba(255, 255, 255, 0.9);
+    stroke: rgba(0, 0, 0, 0.9);
+    r: 15;
+    transition: all 0.2s;
+  }
 }

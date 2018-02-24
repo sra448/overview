@@ -30,7 +30,8 @@ const initialState = {
   rings: defaultRings,
   tasks: JSON.parse(localStorage.getItem("tasks") || "[]"),
   currentTask: undefined,
-  hoveredTask: undefined
+  hoveredTask: undefined,
+  tempEdge: undefined
 }
 
 
@@ -217,6 +218,45 @@ const hideTooltip = (state) => {
 }
 
 
+// edges
+
+
+const addTempEdge = (state, taskId, x, y) => {
+  return {
+    ...state,
+    tempEdge: {
+      taskId,
+      from: [x, y],
+      to: [],
+      target: undefined
+    }
+  }
+}
+
+
+const changeTempEdgePosition = (state, x, y, target) => {
+  const tempEdge = { ...state.tempEdge, to: [x, y], target }
+  return {
+    ...state,
+    tempEdge
+  }
+}
+
+
+const closeTempEdge = (state) => {
+  if (state.tempEdge.target) {
+    const dataId = state.tempEdge.target.attributes.getNamedItem("data-id")
+
+    if (dataId) {
+      console.log(state.tempEdge.taskId, dataId.value)
+      return { ...state, tempEdge: undefined }
+    }
+  }
+
+  return { ...state, tempEdge: undefined }
+}
+
+
 export default (state = initialState, action) => {
   console.log(action)
 
@@ -251,6 +291,15 @@ export default (state = initialState, action) => {
       return setAnglesForTasks(
         generateSeparators(
           changeDateField(state, action.field, action.value)))
+
+    case "TEMP_EDGE_ADD":
+      return addTempEdge(state, action.taskId, action.x, action.y)
+
+    case "TEMP_EDGE_CHANGE_POSITION":
+      return changeTempEdgePosition(state, action.x, action.y, action.target)
+
+    case "TEMP_EDGE_CLOSE":
+      return closeTempEdge(state)
 
     default:
       return setAnglesForTasks(

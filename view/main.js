@@ -43,21 +43,21 @@ const mapDispatchToProps = (dispatch) => {
     },
     hideTaskTooltip: () => {
       dispatch({ type: "HIDE_TASK_TOOLTIP" })
+    },
+    startDrawConnection: (taskId, x, y) => () => {
+      dispatch({ type: "START_DRAW_CONNECTION", taskId, x, y })
     }
   }
 }
 
 
 
-
-
-
 // Main Component
 
 const main = (state) => {
-  const { fromDate, toDate, height, rings, tasks, currentTask, separators } = state
+  const { fromDate, toDate, height, rings, tasks, currentTask, separators, tempEdge } = state
   const { changeCurrentTask, saveCurrentTask, closeCurrentTask, showTask, deleteTask } = state
-  const { onChange, addTask, showTaskTooltip, hideTaskTooltip, hoveredTask } = state
+  const { onChange, addTask, showTaskTooltip, hideTaskTooltip, hoveredTask, startDrawConnection } = state
 
   const visibleTasks = tasks.filter((task) => {
     const date = parse(task.date)
@@ -74,9 +74,9 @@ const main = (state) => {
           save={saveCurrentTask}
           close={closeCurrentTask}
           destroy={deleteTask}
-          />
-        : undefined
-       }
+          /> :
+        undefined
+      }
       <Circle
         height={height}
         rings={rings}
@@ -86,6 +86,8 @@ const main = (state) => {
         showTask={showTask}
         showTooltip={showTaskTooltip}
         hideTooltip={hideTaskTooltip}
+        startDrawConnection={startDrawConnection}
+        tempEdge={tempEdge}
         />
       <div>
         <input

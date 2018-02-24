@@ -92,7 +92,12 @@ const NowLine = ({ midPoint, width }) =>
     />
 
 
-const Tasks = ({ rings, tasks, midPoint, width, hoveredTask, showTask, showTooltip, hideTooltip }) =>
+const Edge = ({ from, to }) => {
+  return <line x1={from[0]} y1={from[1]} x2={to[0] - 30 || from[0]} y2={to[1] - 30 || from[1]} stroke="#000" />
+}
+
+
+const Tasks = ({ rings, tasks, midPoint, width, hoveredTask, showTask, showTooltip, hideTooltip, startDrawConnection }) =>
   <g>
     { rings.map(({ name }, i) => {
       const invserseI = rings.length - i + 1
@@ -101,20 +106,27 @@ const Tasks = ({ rings, tasks, midPoint, width, hoveredTask, showTask, showToolt
         .map(({ id, angle, text }) => {
           const [cx, cy] = radiusEndpoint(midPoint, angle, invserseI * width - width / 2)
 
-          return filter(identity, [
-            <circle
+          return (
+            <g
               key={id}
               className="task"
-              cx={cx}
-              cy={cy}
-              onClick={showTask(id)}
               onMouseOver={showTooltip(id)}
               onMouseOut={hideTooltip}
-              />,
-            hoveredTask === id ?
-              <ToolTip key="tooltip" text={text} cx={cx} cy={cy} />
-              : undefined
-          ])
+              >
+              <circle
+                className="main"
+                data-id={id}
+                cx={cx}
+                cy={cy}
+                onClick={showTask(id)}
+                onMouseDown={startDrawConnection(id, cx, cy)}
+                />
+              { hoveredTask === id ?
+                <ToolTip key="tooltip" text={text} cx={cx} cy={cy} />
+                : undefined
+              }
+            </g>
+          )
         })
       })
     }
@@ -148,15 +160,15 @@ const ToolTip = ({ text, cx, cy }) => {
 
 
 export default (state) => {
-  const { height, rings, tasks, separators, hoveredTask } = state
-  const { showTask, showTooltip, hideTooltip } = state
+  const { height, rings, tasks, separators, hoveredTask, tempEdge } = state
+  const { showTask, showTooltip, hideTooltip, startDrawConnection } = state
 
   const midPoint = height / 2
   const width = midPoint / (rings.length + 1)
   const ringsAndCenter = [...rings, { color: "#fff" }]
 
   return (
-    <svg height={height} width={height}>
+    <svg height={height} width={height} id="circle">
       <Rings
         rings={ringsAndCenter}
         width={width}
@@ -171,6 +183,10 @@ export default (state) => {
         separators={separators}
         midPoint={midPoint}
         />
+      { tempEdge ?
+        <Edge {...tempEdge} /> :
+        undefined
+      }
       <Tasks
         rings={rings}
         tasks={tasks}
@@ -180,6 +196,7 @@ export default (state) => {
         showTask={showTask}
         showTooltip={showTooltip}
         hideTooltip={hideTooltip}
+        startDrawConnection={startDrawConnection}
         />
     </svg>
   )
