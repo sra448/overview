@@ -83,10 +83,10 @@ html, body {
 .task {
   .main {
     cursor: pointer;
-    fill: rgba(255, 255, 255, 0.5);
+    fill: rgba(255, 255, 255, 0.7);
     stroke: rgba(0, 0, 0, 0.6);
     r: 12;
-    transition: all 1s;
+    transition: all 0.2s;
   }
 
   .tooltip {
@@ -107,4 +107,8 @@ html, body {
     r: 15;
     transition: all 0.2s;
   }
+}
+
+.edge {
+  stroke: rgba(0, 0, 0, 0.6);
 }

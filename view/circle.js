@@ -92,8 +92,43 @@ const NowLine = ({ midPoint, width }) =>
     />
 
 
+const getDistanceByCategory = (category, categories, width) =>
+  (categories.length - categories.findIndex(({ name }) => category === name) + 1) * width - width / 2
+
+
+const Edges = ({ tasks, rings, midPoint, width }) => {
+  return tasks.reduce((acc, { id, angle, category, children}) => {
+    const distance = getDistanceByCategory(category, rings, width)
+    const [x1, y1] = radiusEndpoint(midPoint, angle, distance)
+
+    const edges = children.map((childId) => {
+      const childTask = tasks.find(({ id }) => id == childId)
+      const childWidth = getDistanceByCategory(childTask.category, rings, width)
+      const [x2, y2] = radiusEndpoint(midPoint, childTask.angle, childWidth)
+
+      return <line
+        key={`${id}-${childId}`}
+        x1={x1}
+        y1={y1}
+        x2={x2}
+        y2={y2}
+        className="edge"
+        />
+    })
+
+    return [...acc, ...edges]
+  }, [])
+}
+
+
 const Edge = ({ from, to }) => {
-  return <line x1={from[0]} y1={from[1]} x2={to[0] - 30 || from[0]} y2={to[1] - 30 || from[1]} stroke="#000" />
+  return <line
+    x1={from[0]}
+    y1={from[1]}
+    x2={to[0] - 30 || from[0]}
+    y2={to[1] - 30 || from[1]}
+    stroke="#000"
+    />
 }
 
 
@@ -182,6 +217,12 @@ export default (state) => {
       <SegmentTitles
         separators={separators}
         midPoint={midPoint}
+        />
+      <Edges
+        tasks={tasks}
+        rings={rings}
+        midPoint={midPoint}
+        width={width}
         />
       { tempEdge ?
         <Edge {...tempEdge} /> :

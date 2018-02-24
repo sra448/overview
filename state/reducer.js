@@ -123,7 +123,8 @@ const addTask = (state) => {
     currentTask: {
       text: "",
       date: new Date(),
-      category: "Culture"
+      category: "Culture",
+      children: []
     }
   }
 }
@@ -243,13 +244,29 @@ const changeTempEdgePosition = (state, x, y, target) => {
 }
 
 
+const appendConnection = (state, taskId, targetTaskId) => {
+  const tasks = state.tasks.map((task) =>
+    task.id === taskId ?
+      { ...task, children: [...task.children, targetTaskId] } :
+      task
+  )
+
+  return { ...state, tasks }
+}
+
+
 const closeTempEdge = (state) => {
   if (state.tempEdge.target) {
     const dataId = state.tempEdge.target.attributes.getNamedItem("data-id")
 
     if (dataId) {
-      console.log(state.tempEdge.taskId, dataId.value)
-      return { ...state, tempEdge: undefined }
+      const newState = appendConnection(state, state.tempEdge.taskId, dataId.value)
+      localStorage.setItem("tasks", JSON.stringify(newState.tasks))
+
+      return {
+        ...newState,
+        tempEdge: undefined
+      }
     }
   }
 
