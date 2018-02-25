@@ -82,22 +82,24 @@ const RadiusLine = ({ midPoint, angle }) => {
 
 
 const NowLine = ({ midPoint, width }) =>
-  [<line
-    x1={midPoint - 1}
-    y1={midPoint - width + 2}
-    x2={midPoint - 1}
-    y2={0}
-    stroke="#FFFFFF"
-    strokeWidth="2"
-    />,
-  <line
-    x1={midPoint}
-    y1={midPoint - width}
-    x2={midPoint}
-    y2={0}
-    stroke="#00000060"
-    strokeWidth="2"
-    />]
+  <g>
+    <line
+      x1={midPoint - 1}
+      y1={midPoint - width + 2}
+      x2={midPoint - 1}
+      y2={0}
+      stroke="#FFFFFF"
+      strokeWidth="2"
+      />
+    <line
+      x1={midPoint}
+      y1={midPoint - width}
+      x2={midPoint}
+      y2={0}
+      stroke="#00000060"
+      strokeWidth="2"
+      />
+  </g>
 
 
 const getDistanceByCategory = (category, categories, width) =>
