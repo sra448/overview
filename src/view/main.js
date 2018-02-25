@@ -2,8 +2,13 @@ import React from "react"
 import { connect } from "react-redux"
 import { format, parse } from "date-fns"
 
-
 import Paper from 'material-ui/Paper'
+import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List'
+import Divider from 'material-ui/Divider'
+import Checkbox from 'material-ui/Checkbox'
+import TextField from 'material-ui/TextField'
+
+
 import Circle from "./circle"
 import TaskDialog from "./task-dialog"
 
@@ -58,16 +63,24 @@ const mapDispatchToProps = (dispatch) => {
 const DateRangePicker = ({ fromDate, toDate, onChange }) =>
   <Paper>
     <h2>Timeframe</h2>
-    <input
-      type="date"
-      value={format(fromDate, "YYYY-MM-DD")}
-      onChange={onChange("fromDate")}
-      />
-    <input
-      type="date"
-      value={format(toDate, "YYYY-MM-DD")}
-      onChange={onChange("toDate")}
-      />
+    <List>
+      <ListItem>
+        <TextField
+          label="Start"
+          type="date"
+          value={format(fromDate, "YYYY-MM-DD")}
+          onChange={onChange("fromDate")}
+          />
+      </ListItem>
+      <ListItem>
+        <TextField
+          label="End"
+          type="date"
+          value={format(toDate, "YYYY-MM-DD")}
+          onChange={onChange("toDate")}
+          />
+      </ListItem>
+    </List>
   </Paper>
 
 
@@ -75,22 +88,38 @@ const RingPicker = ({ rings }) => {
   return (
     <Paper>
       <h2>Layers</h2>
-      { rings.map(({ name, color }) =>
-          <div key={name}>
-            <div className="color" style={{ background: color }}></div>
-            <div>{name}</div>
-          </div>)
-      }
+      <List>
+        { rings
+            .map(({ name, color }) =>
+              <ListItem key={name}>
+                <Checkbox
+                  checked={true}
+                  color="primary"
+                  disableRipple
+                />
+                <ListItemText primary={name} />
+              </ListItem>)
+        }
+      </List>
     </Paper>
   )
 }
 
 
-const Filters = ({ rings }) => {
+const Tasks = ({ addTask }) => {
   return (
     <Paper>
-      <h2>Filters</h2>
-      <input />
+      <h2>Tasks</h2>
+      <List>
+        <ListItem>
+          <button onClick={addTask}>+ Task</button>
+        </ListItem>
+        <ListItem>
+          <TextField
+            label="Filter"
+            />
+        </ListItem>
+      </List>
     </Paper>
   )
 }
@@ -136,9 +165,9 @@ const main = (state) => {
           tempEdge={tempEdge}
           />
         <div>
-          <div>
-            <button onClick={addTask}>+ Task</button>
-          </div>
+          <Tasks
+            addTask={addTask}
+            />
           <DateRangePicker
             fromDate={fromDate}
             toDate={toDate}
@@ -146,8 +175,6 @@ const main = (state) => {
             />
           <RingPicker
             rings={rings}
-            />
-          <Filters
             />
         </div>
       </div>
