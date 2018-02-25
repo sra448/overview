@@ -1,40 +1,26 @@
 {
-  "name": "overview",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC",
+  "name": "overview-app",
+  "version": "0.1.0",
+  "private": true,
   "dependencies": {
     "date-fns": "^1.29.0",
+    "material-ui": "^1.0.0-beta.34",
+    "node-sass-chokidar": "^0.0.3",
     "ramda": "^0.25.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-redux": "^5.0.6",
+    "react-scripts": "1.1.1",
     "redux": "^3.7.2",
     "redux-observable": "^0.18.0",
     "rxjs": "^5.5.6"
   },
-  "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.0",
-    "babel-loader": "^7.1.2",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-preset-react": "^6.24.1",
-    "css-loader": "^0.28.8",
-    "node-sass": "^4.7.2",
-    "sass-loader": "^6.0.6",
-    "style-loader": "^0.19.1"
-  },
-  "babel": {
-    "presets": [
-      "react"
-    ],
-    "plugins": [
-      "transform-object-rest-spread"
-    ]
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "build-css": "node-sass-chokidar src/ -o src/",
+    "watch-css": "npm run build-css && node-sass-chokidar src/ -o src/ --watch --recursive"
   }
 }

@@ -1,12 +1,11 @@
 import React from "react"
-import { filter, identity } from "ramda"
 
 
 
 // Some usefull functions
 
 
-const radiusEndpoint = (midPoint, angle, width) =>{
+const radiusEndpoint = (midPoint, angle, width) => {
   const x = midPoint + width * Math.cos(Math.PI * angle / 180.0)
   const y = midPoint + width * Math.sin(Math.PI * angle / 180.0)
   return [x, y]
@@ -112,7 +111,7 @@ const Edges = ({ tasks, rings, midPoint, width }) => {
     const [x1, y1] = radiusEndpoint(midPoint, angle, distance)
 
     const edges = children.map((childId) => {
-      const childTask = tasks.find(({ id }) => id == childId)
+      const childTask = tasks.find(({ id }) => id === childId)
       const childWidth = getDistanceByCategory(childTask.category, rings, width)
       const [x2, y2] = radiusEndpoint(midPoint, childTask.angle, childWidth)
 

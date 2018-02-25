@@ -192,7 +192,7 @@ const showTask = (state, taskId) => {
 
 
 const deleteTask = (state, taskId) => {
-  const tasks = state.tasks.filter(({ id }) => id != taskId)
+  const tasks = state.tasks.filter(({ id }) => id !== taskId)
   localStorage.setItem("tasks", JSON.stringify(tasks))
 
   return {

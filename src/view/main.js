@@ -3,11 +3,12 @@ import { connect } from "react-redux"
 import { format, parse } from "date-fns"
 
 
+import Paper from 'material-ui/Paper'
 import Circle from "./circle"
 import TaskDialog from "./task-dialog"
 
 
-require("./style.scss")
+import "./style.css"
 
 
 // React Redux Bindings
@@ -51,6 +52,50 @@ const mapDispatchToProps = (dispatch) => {
 }
 
 
+// Components
+
+
+const DateRangePicker = ({ fromDate, toDate, onChange }) =>
+  <Paper>
+    <h2>Timeframe</h2>
+    <input
+      type="date"
+      value={format(fromDate, "YYYY-MM-DD")}
+      onChange={onChange("fromDate")}
+      />
+    <input
+      type="date"
+      value={format(toDate, "YYYY-MM-DD")}
+      onChange={onChange("toDate")}
+      />
+  </Paper>
+
+
+const RingPicker = ({ rings }) => {
+  return (
+    <Paper>
+      <h2>Layers</h2>
+      { rings.map(({ name, color }) =>
+          <div key={name}>
+            <div className="color" style={{ background: color }}></div>
+            <div>{name}</div>
+          </div>)
+      }
+    </Paper>
+  )
+}
+
+
+const Filters = ({ rings }) => {
+  return (
+    <Paper>
+      <h2>Filters</h2>
+      <input />
+    </Paper>
+  )
+}
+
+
 
 // Main Component
 
@@ -65,7 +110,7 @@ const main = (state) => {
   })
 
   return (
-    <div className="main">
+    <div>
       { currentTask ?
         <TaskDialog
           task={currentTask}
@@ -77,32 +122,34 @@ const main = (state) => {
           /> :
         undefined
       }
-      <Circle
-        height={height}
-        rings={rings}
-        tasks={visibleTasks}
-        separators={separators}
-        hoveredTask={hoveredTask}
-        showTask={showTask}
-        showTooltip={showTaskTooltip}
-        hideTooltip={hideTaskTooltip}
-        startDrawConnection={startDrawConnection}
-        tempEdge={tempEdge}
-        />
-      <div>
-        <input
-          type="date"
-          value={format(fromDate, "YYYY-MM-DD")}
-          onChange={onChange("fromDate")}
+      <div className="main">
+        <Circle
+          height={height}
+          rings={rings}
+          tasks={visibleTasks}
+          separators={separators}
+          hoveredTask={hoveredTask}
+          showTask={showTask}
+          showTooltip={showTaskTooltip}
+          hideTooltip={hideTaskTooltip}
+          startDrawConnection={startDrawConnection}
+          tempEdge={tempEdge}
           />
-        <input
-          type="date"
-          value={format(toDate, "YYYY-MM-DD")}
-          onChange={onChange("toDate")}
-          />
-      </div>
-      <div>
-        <button onClick={addTask}>+ Task</button>
+        <div>
+          <div>
+            <button onClick={addTask}>+ Task</button>
+          </div>
+          <DateRangePicker
+            fromDate={fromDate}
+            toDate={toDate}
+            onChange={onChange}
+            />
+          <RingPicker
+            rings={rings}
+            />
+          <Filters
+            />
+        </div>
       </div>
     </div>
   )

@@ -1,0 +1,83 @@
+html, body {
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  font-family: sans-serif; }
+
+#container {
+  height: 100%; }
+
+.main {
+  display: flex;
+  text-align: center; }
+  .main > svg {
+    padding: 30px;
+    user-select: none; }
+
+.modal {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.52); }
+  .modal > div {
+    margin-top: -20%; }
+
+.dialog {
+  padding: 20px;
+  background: white;
+  width: 260px;
+  text-align: left; }
+  .dialog > h2 {
+    padding: 5px;
+    margin: 0;
+    margin-bottom: 10px;
+    font-size: 1.2em; }
+
+.form > div {
+  display: flex;
+  width: 100%;
+  padding: 5px; }
+  .form > div > label {
+    width: 100px;
+    font-size: 0.8em; }
+
+.footer {
+  display: flex;
+  background: #ebeae8;
+  margin: -20px;
+  margin-top: 18px;
+  padding: 15px 20px;
+  text-align: right; }
+  .footer .spacer {
+    flex: 1 1; }
+  .footer button {
+    margin: 0 5px;
+    padding: 5px; }
+
+.task .main {
+  cursor: pointer;
+  fill: rgba(255, 255, 255, 0.7);
+  stroke: rgba(0, 0, 0, 0.6);
+  r: 12;
+  transition: all 0.2s; }
+
+.task .tooltip {
+  fill: rgba(255, 255, 255, 0.6); }
+
+.task .tooltip-text {
+  font-size: 12px;
+  text-anchor: middle; }
+
+.task:hover .main {
+  fill: rgba(255, 255, 255, 0.9);
+  stroke: rgba(0, 0, 0, 0.9);
+  r: 15;
+  transition: all 0.2s; }
+
+.edge {
+  stroke: rgba(0, 0, 0, 0.6); }
