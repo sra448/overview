@@ -1,12 +1,12 @@
 import React from "react"
 import { format } from "date-fns"
+import Dialog, { DialogTitle } from 'material-ui/Dialog'
 
 
 export default ({ task, categories, changeField, save, close, destroy }) => {
   return (
-    <div className="modal">
+    <Dialog onClose={close} aria-labelledby="add task" open={true}>
       <div className="dialog">
-        <h2>Add Task</h2>
         <div className="form">
           <div>
             <label>Text</label>
@@ -38,6 +38,6 @@ export default ({ task, categories, changeField, save, close, destroy }) => {
           </div>
         </div>
       </div>
-    </div>
+    </Dialog>
   )
 }
